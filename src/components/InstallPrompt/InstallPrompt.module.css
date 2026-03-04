@@ -1,0 +1,58 @@
+.banner {
+  position: fixed;
+  bottom: 24px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: #201d17;
+  border: 1px solid #e8c96a;
+  border-radius: 999px;
+  padding: 12px 24px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  z-index: 9999;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.6);
+  animation: slideUp 0.3s ease forwards;
+}
+
+@keyframes slideUp {
+  from { opacity: 0; transform: translateX(-50%) translateY(16px); }
+  to   { opacity: 1; transform: translateX(-50%) translateY(0); }
+}
+
+.text {
+  font-family: 'Courier New', monospace;
+  font-size: 11px;
+  letter-spacing: 0.15em;
+  color: #f0e8d5;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.installBtn {
+  background: #e8c96a;
+  color: #0d0b08;
+  border: none;
+  border-radius: 999px;
+  padding: 6px 18px;
+  font-family: 'Courier New', monospace;
+  font-size: 10px;
+  font-weight: bold;
+  letter-spacing: 0.2em;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.installBtn:hover { background: #f5d878; }
+
+.dismiss {
+  background: transparent;
+  border: none;
+  color: #7a6e58;
+  cursor: pointer;
+  font-size: 12px;
+  padding: 4px;
+  transition: color 0.2s;
+}
+
+.dismiss:hover { color: #f0e8d5; }

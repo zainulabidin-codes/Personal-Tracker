@@ -1,0 +1,79 @@
+.tableWrapper {
+  overflow-x: auto;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--bg-surface);
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  table-layout: auto;
+}
+
+.headerRow {
+  background: var(--bg-card);
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+
+.headerRow th {
+  font-family: var(--font-mono);
+  font-size: 9px;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--text-secondary);
+  padding: 10px 4px;
+  text-align: left;
+  white-space: nowrap;
+  border-bottom: 1px solid var(--border);
+}
+
+.thMenu {
+  width: 36px;
+}
+
+.thPriority {
+  width: 48px;
+  text-align: center !important;
+}
+
+.thName {
+  min-width: 180px;
+  padding-left: 12px !important;
+}
+
+.thDays {
+  padding: 10px 4px !important;
+}
+
+.dayHeaders {
+  display: flex;
+  gap: 2px;
+}
+
+.dayHeader {
+  width: 16px;
+  min-width: 16px;
+  text-align: center;
+  font-family: var(--font-mono);
+  font-size: 8px;
+  color: var(--text-muted);
+}
+
+.thProgress {
+  width: 160px;
+  padding-left: 12px !important;
+}
+
+.empty {
+  text-align: center;
+  padding: 64px 24px;
+  font-family: var(--font-serif);
+  font-style: italic;
+  font-size: 16px;
+  color: var(--text-muted);
+  border: 1px dashed var(--border);
+  border-radius: 8px;
+}

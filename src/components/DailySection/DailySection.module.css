@@ -1,0 +1,78 @@
+.section {
+  padding: 64px 0;
+  background: var(--bg-surface);
+}
+
+.container {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 0 32px;
+}
+
+.header {
+  display: flex;
+  align-items: baseline;
+  gap: 16px;
+  margin-bottom: 32px;
+}
+
+.sectionNum {
+  font-family: var(--font-mono);
+  font-size: 48px;
+  color: var(--text-muted);
+  line-height: 1;
+}
+
+.heading {
+  font-family: var(--font-serif);
+  font-style: italic;
+  font-size: 32px;
+  color: var(--gold);
+  font-weight: 400;
+}
+
+.dateLabel {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--text-secondary);
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 24px;
+}
+
+.card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.cardTitle {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--gold);
+  text-align: center;
+}
+
+.chartWrapper {
+  width: 100%;
+  min-height: 180px;
+}
+
+.emptyText {
+  font-family: var(--font-serif);
+  font-style: italic;
+  color: var(--text-muted);
+  text-align: center;
+  padding: 40px 0;
+}

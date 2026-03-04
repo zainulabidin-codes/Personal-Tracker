@@ -1,0 +1,305 @@
+.row {
+  border-bottom: 1px solid var(--border-subtle);
+  transition: background 0.15s;
+}
+
+.row:hover {
+  background: rgba(232, 201, 106, 0.04);
+}
+
+/* Column 1 — Menu */
+.menuCell {
+  width: 36px;
+  padding: 8px 4px;
+  vertical-align: middle;
+  position: relative;
+}
+
+.menuBtn {
+  font-size: 16px;
+  color: var(--text-muted);
+  padding: 4px 8px;
+  border-radius: 4px;
+  transition: color 0.2s;
+  line-height: 1;
+}
+
+.menuBtn:hover {
+  color: var(--text-secondary);
+  background: var(--bg-elevated);
+}
+
+/* Portal dropdown */
+.dropdownMenu {
+  background: #1e1c16;
+  border: 1px solid #352f24;
+  border-radius: 8px;
+  padding: 6px 0;
+  min-width: 200px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.7), 0 2px 8px rgba(0, 0, 0, 0.4);
+  animation: fadeSlideIn 0.15s ease forwards;
+}
+
+@keyframes fadeSlideIn {
+  from {
+    opacity: 0;
+    transform: translateY(-6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.menuItem {
+  display: block;
+  width: 100%;
+  text-align: left;
+  padding: 9px 16px;
+  background: transparent;
+  border: none;
+  color: #f0e8d5;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s;
+}
+
+.menuItem:hover {
+  background: #2a2820;
+  color: var(--gold);
+}
+
+.deleteItem {
+  color: #c0544a;
+}
+
+.deleteItem:hover {
+  background: rgba(192, 84, 74, 0.12);
+  color: #e06050;
+}
+
+.menuDivider {
+  border: none;
+  border-top: 1px solid #2a2520;
+  margin: 4px 0;
+}
+
+.typeDot {
+  margin-right: 6px;
+  color: var(--gold);
+  font-size: 10px;
+}
+
+.switchHint {
+  margin-left: auto;
+  color: var(--text-muted);
+  font-size: 10px;
+  float: right;
+}
+
+.menuLabel {
+  font-family: var(--font-mono);
+  font-size: 9px;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  padding: 6px 16px 2px;
+}
+
+.priorityGroup {
+  display: flex;
+  gap: 4px;
+  padding: 4px 16px 6px;
+}
+
+.priorityOption {
+  font-size: 12px;
+  color: var(--text-muted);
+  padding: 4px 10px;
+  border-radius: 4px;
+  border: 1px solid var(--border-subtle);
+  transition: all 0.15s;
+  cursor: pointer;
+  background: transparent;
+  font-family: var(--font-mono);
+  letter-spacing: 2px;
+}
+
+.priorityOption:hover {
+  border-color: var(--gold-dim);
+  color: var(--gold-dim);
+}
+
+.priorityActive {
+  color: var(--gold);
+  border-color: var(--gold);
+  background: rgba(212, 180, 131, 0.08);
+}
+
+/* Column 2 — Priority */
+.priorityCell {
+  width: 48px;
+  padding: 8px 4px;
+  vertical-align: middle;
+  text-align: center;
+}
+
+.priorityBadge {
+  color: var(--gold);
+  font-size: 16px;
+  letter-spacing: 2px;
+}
+
+/* Column 3 — Name */
+.nameCell {
+  min-width: 180px;
+  max-width: 240px;
+  padding: 8px 12px;
+  vertical-align: middle;
+}
+
+.nameWrapper {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.habitText {
+  font-family: var(--font-serif);
+  font-style: italic;
+  font-size: 14px;
+  color: var(--text-primary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.typeSymbol {
+  margin-left: 6px;
+  font-style: normal;
+  font-size: 12px;
+  color: var(--gold-dim);
+}
+
+.quickDelete {
+  flex-shrink: 0;
+  font-size: 12px;
+  color: var(--danger);
+  opacity: 0;
+  transition: opacity 0.15s;
+  padding: 2px 4px;
+}
+
+.row:hover .quickDelete {
+  opacity: 1;
+}
+
+.quickDelete:hover {
+  opacity: 1;
+  background: rgba(192, 84, 74, 0.15);
+  border-radius: 3px;
+}
+
+.editInput {
+  width: 100%;
+  font-family: var(--font-serif);
+  font-style: italic;
+  font-size: 14px;
+  color: var(--text-primary);
+  background: var(--bg-surface);
+  border: 1px solid var(--gold-dim);
+  border-radius: 3px;
+  padding: 4px 8px;
+}
+
+/* Column 4 — Checkboxes */
+.checkboxesCell {
+  padding: 8px 4px;
+  vertical-align: middle;
+}
+
+.checkboxesRow {
+  display: flex;
+  gap: 2px;
+  flex-wrap: nowrap;
+}
+
+.checkbox {
+  width: 16px;
+  height: 16px;
+  min-width: 16px;
+  border: 1px solid var(--border-bright);
+  border-radius: 2px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 9px;
+  transition: all 0.15s;
+  padding: 0;
+  color: var(--bg-primary);
+}
+
+.checkbox:hover:not(.disabled) {
+  border-color: var(--gold-dim);
+}
+
+.checked {
+  background: var(--gold);
+  border-color: var(--gold);
+}
+
+.checked .checkmark {
+  color: #0d0b08;
+  font-weight: bold;
+  font-size: 10px;
+  line-height: 1;
+}
+
+.disabled {
+  opacity: 0.2;
+  cursor: not-allowed;
+}
+
+.future {
+  opacity: 0.5;
+}
+
+/* Column 5 — Progress */
+.progressCell {
+  width: 160px;
+  padding: 8px 12px;
+  vertical-align: middle;
+}
+
+.progressWrapper {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.progressBar {
+  flex: 1;
+  height: 6px;
+  background: var(--border);
+  border-radius: 3px;
+  overflow: hidden;
+}
+
+.progressFill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--gold-dim), var(--gold));
+  border-radius: 3px;
+  transition: width 0.3s ease;
+}
+
+.progressPct {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--gold);
+  font-weight: bold;
+  min-width: 36px;
+  text-align: right;
+}
