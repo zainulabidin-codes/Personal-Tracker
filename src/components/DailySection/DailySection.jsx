@@ -9,18 +9,19 @@ import {
   ResponsiveContainer,
 } from 'recharts';
 import useHabitStore from '../../store/useHabitStore.js';
-import { today } from '../../utils/dateUtils.js';
 import { getDailyScore, getStreakCount, getBestStreak } from '../../utils/scoreUtils.js';
 import ScoreStreakCard from '../shared/ScoreStreakCard.jsx';
 import TypeBreakdownChart from '../shared/TypeBreakdownChart.jsx';
+import { useSectionVisible } from '../../hooks/useSectionVisible.js';
 import styles from './DailySection.module.css';
 
 export default function DailySection() {
   const habits = useHabitStore((s) => s.habits);
-  const todayStr = today();
+  const todayStr = useHabitStore((s) => s.currentDate);
   const score = getDailyScore(habits, todayStr);
   const streak = getStreakCount(habits);
   const bestStreak = getBestStreak(habits);
+  const { ref: headingRef, visible } = useSectionVisible();
 
   // Data for the horizontal bar chart
   const barData = habits.map((h) => ({
@@ -33,7 +34,10 @@ export default function DailySection() {
   return (
     <section id="daily" className={styles.section}>
       <div className={styles.container}>
-        <div className={styles.header}>
+        <div
+          ref={headingRef}
+          className={`${styles.header} ${styles.headerAnim} ${visible ? styles.headerVisible : ''}`}
+        >
           <span className={styles.sectionNum}>01</span>
           <div>
             <h2 className={styles.heading}>Daily</h2>

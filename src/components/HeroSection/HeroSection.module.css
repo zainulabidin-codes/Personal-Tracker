@@ -31,3 +31,53 @@
   color: var(--gold);
   font-weight: 400;
 }
+
+.headerAnim {
+  opacity: 0;
+  transform: translateY(16px);
+  transition: opacity 0.5s ease, transform 0.5s ease;
+}
+
+.headerVisible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Greeting block */
+.greetingBlock {
+  padding: 40px 0 24px;
+  border-bottom: 1px solid var(--border-subtle);
+  margin-bottom: 28px;
+}
+
+.greetingTime {
+  font-size: 11px;
+  font-family: var(--font-mono);
+  letter-spacing: 0.3em;
+  color: var(--gold-dim);
+  text-transform: uppercase;
+  margin-bottom: 8px;
+  display: block;
+}
+
+.greetingText {
+  font-family: var(--font-serif);
+  font-size: 2.4rem;
+  font-style: italic;
+  color: var(--text-primary);
+  margin: 0 0 8px;
+  line-height: 1.2;
+}
+
+.greetingText span {
+  color: var(--gold);
+}
+
+.greetingSub {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.15em;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  transition: all 0.5s ease;
+}

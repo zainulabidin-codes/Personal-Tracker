@@ -10,7 +10,7 @@ import {
   Cell,
 } from 'recharts';
 import useHabitStore from '../../store/useHabitStore.js';
-import { getMonthDays, today } from '../../utils/dateUtils.js';
+import { getMonthDays } from '../../utils/dateUtils.js';
 import {
   getDailyScore,
   getPeriodScore,
@@ -19,6 +19,7 @@ import {
 } from '../../utils/scoreUtils.js';
 import ScoreStreakCard from '../shared/ScoreStreakCard.jsx';
 import TypeBreakdownChart from '../shared/TypeBreakdownChart.jsx';
+import { useSectionVisible } from '../../hooks/useSectionVisible.js';
 import styles from './MonthlySection.module.css';
 
 function getBarColor(score) {
@@ -30,8 +31,9 @@ function getBarColor(score) {
 export default function MonthlySection() {
   const habits = useHabitStore((s) => s.habits);
   const now = new Date();
-  const todayStr = today();
+  const todayStr = useHabitStore((s) => s.currentDate);
   const monthDays = getMonthDays(now.getFullYear(), now.getMonth());
+  const { ref: headingRef, visible } = useSectionVisible();
 
   const barData = monthDays
     .filter((d) => d <= todayStr)
@@ -50,7 +52,10 @@ export default function MonthlySection() {
   return (
     <section id="monthly" className={styles.section}>
       <div className={styles.container}>
-        <div className={styles.header}>
+        <div
+          ref={headingRef}
+          className={`${styles.header} ${styles.headerAnim} ${visible ? styles.headerVisible : ''}`}
+        >
           <span className={styles.sectionNum}>03</span>
           <div>
             <h2 className={styles.heading}>This Month</h2>

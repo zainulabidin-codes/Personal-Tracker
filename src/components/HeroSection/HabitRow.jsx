@@ -1,11 +1,11 @@
 import { useState, useRef, useEffect } from 'react';
 import ReactDOM from 'react-dom';
 import useHabitStore from '../../store/useHabitStore.js';
-import { getMonthDays, today } from '../../utils/dateUtils.js';
+import { getMonthDays } from '../../utils/dateUtils.js';
 import { getHabitMonthlyScore } from '../../utils/scoreUtils.js';
 import styles from './HabitRow.module.css';
 
-export default function HabitRow({ habit, monthDays }) {
+export default function HabitRow({ habit, monthDays, selectedDay }) {
   const {
     deleteHabit,
     editHabit,
@@ -19,11 +19,12 @@ export default function HabitRow({ habit, monthDays }) {
   const [editing, setEditing] = useState(false);
   const [editText, setEditText] = useState(habit.text);
   const [confirmDelete, setConfirmDelete] = useState(false);
+  const [pulsedDay, setPulsedDay] = useState(null);
   const triggerRef = useRef(null);
   const dropdownRef = useRef(null);
   const editRef = useRef(null);
 
-  const todayStr = today();
+  const todayStr = useHabitStore((s) => s.currentDate);
 
   // Close menu on outside click or Escape
   useEffect(() => {
@@ -208,7 +209,18 @@ export default function HabitRow({ habit, monthDays }) {
               onBlur={handleEditSave}
             />
           ) : (
-            <span className={styles.habitText}>
+            <span
+              className={styles.habitText}
+              style={
+                selectedDay
+                  ? {
+                      color: habit.completions?.[selectedDay]
+                        ? 'var(--gold)'
+                        : 'var(--text-muted)',
+                    }
+                  : undefined
+              }
+            >
               {habit.text}
               <span className={styles.typeSymbol}>{typeSymbol}</span>
             </span>
@@ -229,19 +241,40 @@ export default function HabitRow({ habit, monthDays }) {
           {monthDays.map((day) => {
             const dayNum = parseInt(day.split('-')[2], 10);
             const isBeforeCreation = day < habit.createdAt;
+            const isToday = day === todayStr;
+            const isPast = day < todayStr;
             const isFuture = day > todayStr;
             const isChecked = !!habit.completions[day];
+            const isColumnSelected = day === selectedDay;
+
+            let checkboxClass = styles.checkbox;
+            if (isBeforeCreation) {
+              checkboxClass += ` ${styles.checkboxDisabled}`;
+            } else if (isToday) {
+              checkboxClass += ` ${styles.checkboxToday}`;
+            } else if (isPast) {
+              checkboxClass += ` ${styles.checkboxPast}`;
+            } else if (isFuture) {
+              checkboxClass += ` ${styles.checkboxFuture}`;
+            }
+            if (isChecked) checkboxClass += ` ${styles.checked}`;
+            if (pulsedDay === day) checkboxClass += ` ${styles.checkPulse}`;
+            if (isColumnSelected) checkboxClass += ` ${styles.columnHighlight}`;
+
+            const isInteractive = isToday && !isBeforeCreation;
 
             return (
               <button
                 key={day}
-                className={`${styles.checkbox} ${
-                  isChecked ? styles.checked : ''
-                } ${isBeforeCreation ? styles.disabled : ''} ${
-                  isFuture ? styles.future : ''
-                }`}
-                disabled={isBeforeCreation}
-                onClick={() => toggleCompletion(habit.id, day)}
+                className={checkboxClass}
+                disabled={!isInteractive}
+                onClick={isInteractive ? () => {
+                  if (!isChecked) {
+                    setPulsedDay(day);
+                    setTimeout(() => setPulsedDay(null), 400);
+                  }
+                  toggleCompletion(habit.id, day);
+                } : undefined}
                 title={`Day ${dayNum}`}
                 aria-label={`Day ${dayNum} ${isChecked ? 'completed' : 'not completed'}`}
               >

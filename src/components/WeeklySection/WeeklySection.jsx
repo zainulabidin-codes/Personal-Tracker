@@ -9,7 +9,7 @@ import {
   ResponsiveContainer,
 } from 'recharts';
 import useHabitStore from '../../store/useHabitStore.js';
-import { getWeekDays, today } from '../../utils/dateUtils.js';
+import { getWeekDays } from '../../utils/dateUtils.js';
 import {
   getDailyScore,
   getPeriodScore,
@@ -18,12 +18,14 @@ import {
 } from '../../utils/scoreUtils.js';
 import ScoreStreakCard from '../shared/ScoreStreakCard.jsx';
 import TypeBreakdownChart from '../shared/TypeBreakdownChart.jsx';
+import { useSectionVisible } from '../../hooks/useSectionVisible.js';
 import styles from './WeeklySection.module.css';
 
 export default function WeeklySection() {
   const habits = useHabitStore((s) => s.habits);
-  const todayStr = today();
+  const todayStr = useHabitStore((s) => s.currentDate);
   const weekDays = getWeekDays(new Date());
+  const { ref: headingRef, visible } = useSectionVisible();
 
   // Line chart data — score for each day of the week
   const lineData = weekDays.map((d) => ({
@@ -43,7 +45,10 @@ export default function WeeklySection() {
   return (
     <section id="weekly" className={styles.section}>
       <div className={styles.container}>
-        <div className={styles.header}>
+        <div
+          ref={headingRef}
+          className={`${styles.header} ${styles.headerAnim} ${visible ? styles.headerVisible : ''}`}
+        >
           <span className={styles.sectionNum}>02</span>
           <div>
             <h2 className={styles.heading}>This Week</h2>

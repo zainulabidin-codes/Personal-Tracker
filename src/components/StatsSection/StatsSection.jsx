@@ -15,6 +15,7 @@ import {
   getMonthlyAverages,
 } from '../../utils/scoreUtils.js';
 import styles from './StatsSection.module.css';
+import { useSectionVisible } from '../../hooks/useSectionVisible.js';
 
 export default function StatsSection() {
   const habits = useHabitStore((s) => s.habits);
@@ -24,11 +25,15 @@ export default function StatsSection() {
   const bestStreak = getBestStreak(habits);
   const mostConsistent = getMostConsistentHabit(habits);
   const monthlyAvg = getMonthlyAverages(habits);
+  const { ref: headingRef, visible } = useSectionVisible();
 
   return (
     <section id="stats" className={styles.section}>
       <div className={styles.container}>
-        <div className={styles.header}>
+        <div
+          ref={headingRef}
+          className={`${styles.header} ${styles.headerAnim} ${visible ? styles.headerVisible : ''}`}
+        >
           <span className={styles.sectionNum}>04</span>
           <h2 className={styles.heading}>All Time</h2>
         </div>

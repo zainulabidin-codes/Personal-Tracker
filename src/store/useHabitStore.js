@@ -2,6 +2,14 @@ import { create } from 'zustand';
 
 const STORAGE_KEY = 'pt-habits';
 
+function formatToday() {
+  const n = new Date();
+  const y = n.getFullYear();
+  const m = String(n.getMonth() + 1).padStart(2, '0');
+  const d = String(n.getDate()).padStart(2, '0');
+  return `${y}-${m}-${d}`;
+}
+
 function loadHabits() {
   try {
     const raw = localStorage.getItem(STORAGE_KEY);
@@ -20,6 +28,8 @@ function persistHabits(habits) {
 
 const useHabitStore = create((set, get) => ({
   habits: loadHabits(),
+  currentDate: formatToday(),
+  setCurrentDate: (date) => set({ currentDate: date }),
 
   addHabit: (text) => {
     const trimmed = text.trim();
