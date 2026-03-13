@@ -14,7 +14,12 @@ function loadHabits() {
   try {
     const raw = localStorage.getItem(STORAGE_KEY);
     if (raw) {
-      return JSON.parse(raw);
+      const habits = JSON.parse(raw);
+      const today = formatToday();
+      // Remove daily habits whose creation day has already passed
+      return habits.filter(
+        (h) => h.type === 'permanent' || h.createdAt >= today
+      );
     }
   } catch {
     /* corrupted data — start fresh */
@@ -29,7 +34,18 @@ function persistHabits(habits) {
 const useHabitStore = create((set, get) => ({
   habits: loadHabits(),
   currentDate: formatToday(),
-  setCurrentDate: (date) => set({ currentDate: date }),
+  setCurrentDate: (date) => {
+    set((state) => {
+      // Purge daily habits whose creation day is before the new date
+      const updatedHabits = state.habits.filter(
+        (h) => h.type === 'permanent' || h.createdAt >= date
+      );
+      if (updatedHabits.length !== state.habits.length) {
+        persistHabits(updatedHabits);
+      }
+      return { currentDate: date, habits: updatedHabits };
+    });
+  },
 
   addHabit: (text) => {
     const trimmed = text.trim();
