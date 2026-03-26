@@ -275,7 +275,7 @@ export default function HabitRow({ habit, monthDays, selectedDay }) {
             if (pulsedDay === day) checkboxClass += ` ${styles.checkPulse}`;
             if (isColumnSelected) checkboxClass += ` ${styles.columnHighlight}`;
 
-            const isInteractive = isToday && !isBeforeCreation;
+            const isInteractive = !isFuture && !isBeforeCreation;
 
             return (
               <button
