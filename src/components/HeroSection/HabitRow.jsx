@@ -26,7 +26,7 @@ export default function HabitRow({ habit, monthDays, selectedDay }) {
 
   const todayStr = useHabitStore((s) => s.currentDate);
 
-  // Close menu on outside click or Escape
+  // Close menu on outside click or Escape; keep position synced while scrolling
   useEffect(() => {
     if (!menuOpen) return;
 
@@ -49,11 +49,25 @@ export default function HabitRow({ habit, monthDays, selectedDay }) {
       }
     }
 
+    function handleScroll() {
+      if (triggerRef.current) {
+        const rect = triggerRef.current.getBoundingClientRect();
+        setMenuPosition({
+          position: 'fixed',
+          top: rect.bottom + 8 + 'px',
+          left: rect.left + 'px',
+          zIndex: 9999,
+        });
+      }
+    }
+
     document.addEventListener('mousedown', handleOutside);
     document.addEventListener('keydown', handleEscape);
+    window.addEventListener('scroll', handleScroll, true);
     return () => {
       document.removeEventListener('mousedown', handleOutside);
       document.removeEventListener('keydown', handleEscape);
+      window.removeEventListener('scroll', handleScroll, true);
     };
   }, [menuOpen]);
 
@@ -261,7 +275,7 @@ export default function HabitRow({ habit, monthDays, selectedDay }) {
             if (pulsedDay === day) checkboxClass += ` ${styles.checkPulse}`;
             if (isColumnSelected) checkboxClass += ` ${styles.columnHighlight}`;
 
-            const isInteractive = isToday && !isBeforeCreation;
+            const isInteractive = !isFuture && !isBeforeCreation;
 
             return (
               <button

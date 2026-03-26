@@ -62,17 +62,20 @@ function getAllDaysInMonth(referenceDate) {
  *                                 to score a different month
  */
 export function getHabitMonthlyScore(habit, referenceDate = new Date()) {
-  // denominator: total days in the month — dynamic, never hardcoded
-  const denominator = getDaysInMonth(referenceDate);
-  // all days of that month as date strings
   const allDays = getAllDaysInMonth(referenceDate);
+  const todayStr = toKey(localToday());
+  
+  // Calculate score against all days in the month that have already occurred.
+  // This prevents new habits from showing 100% just because they were created today.
+  const elapsedDays = allDays.filter(d => d <= todayStr);
 
-  // count how many days this habit was completed in that month
-  const checkedCount = allDays.filter(
+  if (!elapsedDays.length) return 0;
+
+  const checkedCount = elapsedDays.filter(
     dateStr => habit.completions?.[dateStr] === true
   ).length;
 
-  const raw = (checkedCount / denominator) * 100;
+  const raw = (checkedCount / elapsedDays.length) * 100;
   return Math.min(100, Math.max(0, Math.round(raw)));
 }
 
@@ -85,10 +88,12 @@ export function getHabitMonthlyScore(habit, referenceDate = new Date()) {
  */
 export function getDailyScore(habits, dateStr) {
   if (!habits?.length) return 0;
-  const checked = habits.filter(
+  const activeHabits = habits.filter(h => !h.createdAt || h.createdAt <= dateStr);
+  if (!activeHabits.length) return 0;
+  const checked = activeHabits.filter(
     h => h.completions?.[dateStr] === true
   ).length;
-  return Math.round((checked / habits.length) * 100);
+  return Math.round((checked / activeHabits.length) * 100);
 }
 
 /**
@@ -116,11 +121,27 @@ export function getPeriodScore(habits, dateStrings) {
  */
 export function getStreakCount(habits) {
   if (!habits?.length) return 0;
+  
+  const dates = habits.map(h => h.createdAt).filter(Boolean).sort();
+  if (!dates.length) return 0;
+  const earliest = dates[0];
+  
   let streak = 0;
   const cursor = localToday();
-  for (let i = 0; i < 366; i++) {
+  const todayKey = toKey(cursor);
+  
+  // If today isn't a "Perfect Day" yet, don't break the streak immediately;
+  // start checking from yesterday. If today IS perfect, it counts towards the streak.
+  if (getDailyScore(habits, todayKey) < 100) {
+    cursor.setDate(cursor.getDate() - 1);
+  }
+
+  while (true) {
     const key = toKey(cursor);
-    if (getDailyScore(habits, key) === 0) break;
+    if (key < earliest) break;
+    
+    // Streak only continues if EVERY active habit was completed (Score = 100)
+    if (getDailyScore(habits, key) < 100) break;
     streak++;
     cursor.setDate(cursor.getDate() - 1);
   }
@@ -146,7 +167,8 @@ export function getBestStreak(habits) {
   let best = 0, current = 0;
   for (const day of allDays) {
     const key = toKey(day);
-    if (getDailyScore(habits, key) > 0) {
+    // Best streak also requires 100% completion
+    if (getDailyScore(habits, key) === 100) {
       current++;
       if (current > best) best = current;
     } else {

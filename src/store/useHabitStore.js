@@ -1,37 +1,47 @@
 import { create } from 'zustand';
+import { today } from '../utils/dateUtils.js';
+import storage from './storage.js';
 
-const STORAGE_KEY = 'pt-habits';
-
-function formatToday() {
-  const n = new Date();
-  const y = n.getFullYear();
-  const m = String(n.getMonth() + 1).padStart(2, '0');
-  const d = String(n.getDate()).padStart(2, '0');
-  return `${y}-${m}-${d}`;
-}
-
-function loadHabits() {
-  try {
-    const raw = localStorage.getItem(STORAGE_KEY);
-    if (raw) {
-      return JSON.parse(raw);
-    }
-  } catch {
-    /* corrupted data — start fresh */
-  }
-  return [];
-}
-
-function persistHabits(habits) {
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(habits));
-}
+const HABITS_KEY = 'pt-habits-v2';
+const LEGACY_STORAGE_KEY = 'pt-habits';
 
 const useHabitStore = create((set, get) => ({
-  habits: loadHabits(),
-  currentDate: formatToday(),
-  setCurrentDate: (date) => set({ currentDate: date }),
+  habits: [],
+  currentDate: today(),
+  isInitialized: false,
 
-  addHabit: (text) => {
+  /**
+   * Initialize the store: Migration from localStorage + Load from IndexedDB
+   */
+  initialize: async () => {
+    if (get().isInitialized) return;
+
+    let habits = await storage.getItem(HABITS_KEY);
+
+    // MIGRATION: If no IndexedDB data, check localStorage for legacy data
+    if (!habits) {
+      const legacyRaw = localStorage.getItem(LEGACY_STORAGE_KEY);
+      if (legacyRaw) {
+        try {
+          habits = JSON.parse(legacyRaw);
+          // Persist legacy data into IndexedDB
+          await storage.setItem(HABITS_KEY, habits);
+          // Optionally clear localStorage to save space
+          // localStorage.removeItem(LEGACY_STORAGE_KEY);
+        } catch (e) {
+          console.error('Failed to parse legacy habits', e);
+        }
+      }
+    }
+
+    set({ habits: habits || [], isInitialized: true });
+  },
+
+  setCurrentDate: (date) => {
+    set({ currentDate: date });
+  },
+
+  addHabit: async (text) => {
     const trimmed = text.trim();
     if (!trimmed) return;
     const newHabit = {
@@ -39,72 +49,70 @@ const useHabitStore = create((set, get) => ({
       text: trimmed,
       type: 'daily',
       priority: 2,
-      createdAt: new Date().toISOString().slice(0, 10),
+      createdAt: today(),
       completions: {},
     };
-    set((state) => {
-      const updated = [...state.habits, newHabit];
-      persistHabits(updated);
-      return { habits: updated };
-    });
+    const updated = [...get().habits, newHabit];
+    set({ habits: updated });
+    await storage.setItem(HABITS_KEY, updated);
   },
 
-  deleteHabit: (id) => {
-    set((state) => {
-      const updated = state.habits.filter((h) => h.id !== id);
-      persistHabits(updated);
-      return { habits: updated };
-    });
+  deleteHabit: async (id) => {
+    const updated = get().habits.filter((h) => h.id !== id);
+    set({ habits: updated });
+    await storage.setItem(HABITS_KEY, updated);
   },
 
-  editHabit: (id, newText) => {
+  editHabit: async (id, newText) => {
     const trimmed = newText.trim();
     if (!trimmed) return;
-    set((state) => {
-      const updated = state.habits.map((h) =>
-        h.id === id ? { ...h, text: trimmed } : h
-      );
-      persistHabits(updated);
-      return { habits: updated };
-    });
+    const updated = get().habits.map((h) =>
+      h.id === id ? { ...h, text: trimmed } : h
+    );
+    set({ habits: updated });
+    await storage.setItem(HABITS_KEY, updated);
   },
 
-  toggleCompletion: (id, dateString) => {
-    set((state) => {
-      const updated = state.habits.map((h) => {
-        if (h.id !== id) return h;
-        const completions = { ...h.completions };
-        if (completions[dateString]) {
-          delete completions[dateString];
-        } else {
-          completions[dateString] = true;
-        }
-        return { ...h, completions };
-      });
-      persistHabits(updated);
-      return { habits: updated };
+  toggleCompletion: async (id, dateString) => {
+    const updated = get().habits.map((h) => {
+      if (h.id !== id) return h;
+      const completions = { ...h.completions };
+      if (completions[dateString]) {
+        delete completions[dateString];
+      } else {
+        completions[dateString] = true;
+      }
+      return { ...h, completions };
     });
+    set({ habits: updated });
+    await storage.setItem(HABITS_KEY, updated);
   },
 
-  setHabitType: (id, type) => {
-    set((state) => {
-      const updated = state.habits.map((h) =>
-        h.id === id ? { ...h, type } : h
-      );
-      persistHabits(updated);
-      return { habits: updated };
-    });
+  setHabitType: async (id, type) => {
+    const updated = get().habits.map((h) =>
+      h.id === id ? { ...h, type } : h
+    );
+    set({ habits: updated });
+    await storage.setItem(HABITS_KEY, updated);
   },
 
-  setHabitPriority: (id, priority) => {
-    set((state) => {
-      const updated = state.habits.map((h) =>
-        h.id === id ? { ...h, priority } : h
-      );
-      persistHabits(updated);
-      return { habits: updated };
-    });
+  setHabitPriority: async (id, priority) => {
+    const updated = get().habits.map((h) =>
+      h.id === id ? { ...h, priority } : h
+    );
+    set({ habits: updated });
+    await storage.setItem(HABITS_KEY, updated);
   },
+
+  /**
+   * Bulk import: replaces all habits with the provided list.
+   * Useful for backup restoration.
+   */
+  importHabits: async (habitsList) => {
+    if (!Array.isArray(habitsList)) return;
+    set({ habits: habitsList });
+    await storage.setItem(HABITS_KEY, habitsList);
+  }
 }));
 
 export default useHabitStore;

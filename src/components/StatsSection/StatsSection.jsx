@@ -1,3 +1,4 @@
+import { useRef } from 'react';
 import {
   LineChart,
   Line,
@@ -19,6 +20,8 @@ import { useSectionVisible } from '../../hooks/useSectionVisible.js';
 
 export default function StatsSection() {
   const habits = useHabitStore((s) => s.habits);
+  const importHabits = useHabitStore((s) => s.importHabits);
+  const fileInputRef = useRef(null);
 
   const totalHabits = habits.length;
   const totalCompletions = getTotalCompletions(habits);
@@ -26,6 +29,50 @@ export default function StatsSection() {
   const mostConsistent = getMostConsistentHabit(habits);
   const monthlyAvg = getMonthlyAverages(habits);
   const { ref: headingRef, visible } = useSectionVisible();
+
+  const handleExport = () => {
+    const dataStr = JSON.stringify(habits, null, 2);
+    const dataUri = 'data:application/json;charset=utf-8,' + encodeURIComponent(dataStr);
+    const exportFileDefaultName = `personal-tracker-backup-${new Date().toISOString().split('T')[0]}.json`;
+
+    const linkElement = document.createElement('a');
+    linkElement.setAttribute('href', dataUri);
+    linkElement.setAttribute('download', exportFileDefaultName);
+    linkElement.click();
+  };
+
+  const handleImportClick = () => {
+    fileInputRef.current?.click();
+  };
+
+  const handleFileChange = (event) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      try {
+        const content = e.target?.result;
+        if (typeof content !== 'string') return;
+        const importedData = JSON.parse(content);
+        
+        if (Array.isArray(importedData)) {
+          if (confirm('Importing will replace all current data. Continue?')) {
+            importHabits(importedData);
+            alert('Data imported successfully!');
+          }
+        } else {
+          alert('Invalid backup file format.');
+        }
+      } catch (err) {
+        console.error('Import error:', err);
+        alert('Failed to parse backup file.');
+      }
+    };
+    reader.readAsText(file);
+    // Reset input so the same file can be selected again
+    event.target.value = '';
+  };
 
   return (
     <section id="stats" className={styles.section}>
@@ -110,6 +157,26 @@ export default function StatsSection() {
             ) : (
               <p className={styles.emptyText}>Add habits to see monthly trends</p>
             )}
+          </div>
+        </div>
+
+        {/* Backup & Recovery section */}
+        <div className={styles.actionsCard}>
+          <h3 className={styles.cardTitle}>BACKUP & RECOVERY</h3>
+          <div className={styles.actionsGrid}>
+            <button className={styles.btn} onClick={handleExport}>
+              Download Backup (JSON)
+            </button>
+            <button className={`${styles.btn} ${styles.btnSecondary}`} onClick={handleImportClick}>
+              Restore from File
+            </button>
+            <input
+              type="file"
+              accept=".json"
+              className={styles.fileInput}
+              ref={fileInputRef}
+              onChange={handleFileChange}
+            />
           </div>
         </div>
       </div>

@@ -85,6 +85,7 @@
   border: 1px solid var(--border);
   border-radius: 8px;
   padding: 24px;
+  margin-bottom: 24px;
 }
 
 .cardTitle {
@@ -108,4 +109,57 @@
   color: var(--text-muted);
   text-align: center;
   padding: 60px 0;
+}
+
+.actionsCard {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 32px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 24px;
+}
+
+.actionsGrid {
+  display: flex;
+  gap: 16px;
+}
+
+.btn {
+  background: transparent;
+  border: 1px solid var(--gold);
+  color: var(--gold);
+  padding: 10px 20px;
+  border-radius: 6px;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.btn:hover {
+  background: rgba(232, 201, 106, 0.1);
+  box-shadow: 0 0 12px rgba(232, 201, 106, 0.1);
+}
+
+.btnSecondary {
+  border-color: var(--text-muted);
+  color: var(--text-muted);
+}
+
+.btnSecondary:hover {
+  background: rgba(200, 184, 144, 0.05);
+  border-color: var(--gold);
+  color: var(--gold);
+}
+
+.fileInput {
+  display: none;
 }
